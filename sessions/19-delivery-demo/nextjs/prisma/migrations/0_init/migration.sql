@@ -1,0 +1,3 @@
+-- Baseline. The database starts as a copy of Pagila, whose tables already exist.
+-- `npm run setup` marks this migration as applied without running it
+-- (prisma migrate resolve --applied 0_init), so Prisma Migrate accepts the non-empty database.

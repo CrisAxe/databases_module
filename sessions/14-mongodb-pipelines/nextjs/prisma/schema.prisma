@@ -1,0 +1,85 @@
+// Trimmed from `npx prisma db pull`: the Pagila tables the films and customers collections are built from.
+// The monthly report reads payment with $queryRaw, so payment needs no model. No migrations: read only.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model film {
+  film_id       Int             @id @default(autoincrement())
+  title         String
+  rental_rate   Decimal         @default(4.99) @db.Decimal(4, 2)
+  length        Int?            @db.SmallInt
+  rating        mpaa_rating?    @default(G)
+  film_actor    film_actor[]
+  film_category film_category[]
+  inventory     inventory[]
+}
+
+model category {
+  category_id   Int             @id @default(autoincrement())
+  name          String
+  film_category film_category[]
+}
+
+// In this Pagila a film has 1 to 3 categories.
+model film_category {
+  film_id     Int
+  category_id Int
+  category    category @relation(fields: [category_id], references: [category_id])
+  film        film     @relation(fields: [film_id], references: [film_id])
+
+  @@id([film_id, category_id])
+}
+
+model actor {
+  actor_id   Int          @id @default(autoincrement())
+  first_name String
+  last_name  String
+  film_actor film_actor[]
+}
+
+model film_actor {
+  actor_id Int
+  film_id  Int
+  actor    actor @relation(fields: [actor_id], references: [actor_id])
+  film     film  @relation(fields: [film_id], references: [film_id])
+
+  @@id([actor_id, film_id])
+}
+
+model customer {
+  customer_id Int      @id @default(autoincrement())
+  store_id    Int
+  first_name  String
+  last_name   String
+  rental      rental[]
+}
+
+model inventory {
+  inventory_id Int      @id @default(autoincrement())
+  film_id      Int
+  film         film     @relation(fields: [film_id], references: [film_id])
+  rental       rental[]
+}
+
+model rental {
+  rental_id    Int       @id @default(autoincrement())
+  rental_date  DateTime  @db.Timestamptz(6)
+  inventory_id Int
+  customer_id  Int
+  customer     customer  @relation(fields: [customer_id], references: [customer_id])
+  inventory    inventory @relation(fields: [inventory_id], references: [inventory_id])
+}
+
+enum mpaa_rating {
+  G
+  PG
+  PG_13 @map("PG-13")
+  R
+  NC_17 @map("NC-17")
+}

@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Trimmed from `npx prisma db pull`. The application connects as the app role,
+// which can read and write rows but not change the schema, so this project has
+// no migrations.
+model customer {
+  customer_id Int     @id @default(autoincrement())
+  store_id    Int
+  first_name  String
+  last_name   String
+  email       String?
+}

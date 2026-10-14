@@ -1,0 +1,13 @@
+[project]
+name = "s13-fastapi"
+version = "0.1.0"
+description = "Session 13 in FastAPI: MongoDB documents, CRUD and validation"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.142",
+    "uvicorn[standard]>=0.54",
+    "psycopg[binary]>=3.3",
+    "pymongo>=4.18",
+    "pydantic>=2.12",
+    "python-dotenv>=1.0",
+]

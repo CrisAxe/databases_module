@@ -1,0 +1,49 @@
+// Trimmed from `npx prisma db pull`: the Pagila tables a store document is built from.
+// This project only reads them, so there are no migrations.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model store {
+  store_id         Int     @id @default(autoincrement())
+  manager_staff_id Int     @unique(map: "idx_unq_manager_staff_id")
+  address_id       Int
+  staff            staff[]
+  address          address @relation(fields: [address_id], references: [address_id])
+}
+
+model staff {
+  staff_id   Int     @id @default(autoincrement())
+  first_name String
+  last_name  String
+  store_id   Int
+  active     Boolean @default(true)
+  store      store   @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model address {
+  address_id Int     @id @default(autoincrement())
+  address    String
+  city_id    Int
+  city       city    @relation(fields: [city_id], references: [city_id])
+  store      store[]
+}
+
+model city {
+  city_id    Int       @id @default(autoincrement())
+  city       String
+  country_id Int
+  address    address[]
+  country    country   @relation(fields: [country_id], references: [country_id])
+}
+
+model country {
+  country_id Int    @id @default(autoincrement())
+  country    String
+  city       city[]
+}

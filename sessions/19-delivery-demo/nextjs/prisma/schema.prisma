@@ -1,0 +1,16 @@
+// The demo's own tables. The Pagila tables it reads (customer, rental, inventory) are used
+// through $queryRaw only, so they are not mapped here; 0_init records that they already exist.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Session 08. balance >= 0 is a CHECK constraint, added by hand in 1_account/migration.sql.
+model account {
+  id      Int     @id
+  balance Decimal @db.Decimal
+}

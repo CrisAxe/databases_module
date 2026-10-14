@@ -1,0 +1,2 @@
+# Dumps contain all the data, and roles_*.sql contains password hashes.
+backups/

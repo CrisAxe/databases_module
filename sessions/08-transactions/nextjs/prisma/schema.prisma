@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// The tutorial's account table. CHECK (balance >= 0) cannot be written in
+// Prisma's schema; it was added by hand to the migration. It is the last line
+// of defence: whatever the application does, the balance never goes negative.
+model Account {
+  id      Int     @id
+  balance Decimal @db.Decimal(12, 2)
+
+  @@map("account")
+}

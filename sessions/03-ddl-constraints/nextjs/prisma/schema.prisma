@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// The recipe model from session 02 with every rule from the session 03 tutorial.
+// UNIQUE, foreign keys and ON DELETE are declared here. Prisma's schema has no
+// syntax for CHECK constraints or identity columns, so those were added by hand
+// to the first migration (prisma/migrations/*_init/migration.sql).
+
+model Author {
+  id        Int      @id @default(autoincrement()) @map("author_id")
+  name      String
+  email     String   @unique(map: "author_email_key")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  recipes   Recipe[]
+
+  @@map("author")
+}
+
+model Ingredient {
+  id          Int                @id @default(autoincrement()) @map("ingredient_id")
+  name        String             @unique(map: "ingredient_name_key")
+  kcalPer100g Decimal            @map("kcal_per_100g") @db.Decimal(6, 1)
+  recipes     RecipeIngredient[]
+
+  @@map("ingredient")
+}
+
+model Recipe {
+  id          Int       @id @default(autoincrement()) @map("recipe_id")
+  authorId    Int       @map("author_id")
+  title       String
+  servings    Int
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+
+  // RESTRICT: an author with published recipes cannot be deleted by accident.
+  author      Author             @relation(fields: [authorId], references: [id], onDelete: Restrict, map: "recipe_author_id_fkey")
+  ingredients RecipeIngredient[]
+
+  // One author cannot publish two recipes with the same title.
+  @@unique([authorId, title], map: "recipe_author_id_title_key")
+  @@map("recipe")
+}
+
+model RecipeIngredient {
+  recipeId     Int     @map("recipe_id")
+  ingredientId Int     @map("ingredient_id")
+  grams        Decimal @db.Decimal(7, 1)
+
+  // CASCADE: the ingredient list means nothing without its recipe.
+  recipe     Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade, map: "recipe_ingredient_recipe_id_fkey")
+  // RESTRICT: an ingredient used by a recipe cannot be deleted.
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict, map: "recipe_ingredient_ingredient_id_fkey")
+
+  @@id([recipeId, ingredientId])
+  @@map("recipe_ingredient")
+}

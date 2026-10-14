@@ -1,0 +1,14 @@
+# Turns on AOF for the course Redis (session 16). Use it together with docker-compose.yml:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.redis-aof.yml up -d redis
+#
+# Back to the default (RDB snapshots only, as every other session expects):
+#
+#   docker compose up -d redis
+#
+# Each command recreates the Redis container, so Redis is down for a few seconds for
+# every project that uses it. The keys stay: they live in the redis_data volume.
+services:
+  redis:
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}",
+              "--appendonly", "yes", "--appendfsync", "everysec"]

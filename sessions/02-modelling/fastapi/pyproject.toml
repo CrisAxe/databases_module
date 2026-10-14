@@ -1,0 +1,11 @@
+[project]
+name = "s02-fastapi"
+version = "0.1.0"
+description = "Session 02 in FastAPI: modelling and normalisation"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.142",
+    "uvicorn[standard]>=0.54",
+    "psycopg[binary]>=3.3",
+    "python-dotenv>=1.0",
+]

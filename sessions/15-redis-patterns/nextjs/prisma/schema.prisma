@@ -1,0 +1,23 @@
+// Trimmed from `npx prisma db pull`: the two Pagila tables this session reads and updates.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model film {
+  film_id     Int     @id @default(autoincrement())
+  title       String
+  rental_rate Decimal @default(4.99) @db.Decimal(4, 2)
+}
+
+model customer {
+  customer_id Int       @id @default(autoincrement())
+  first_name  String
+  last_name   String
+  email       String?
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+}

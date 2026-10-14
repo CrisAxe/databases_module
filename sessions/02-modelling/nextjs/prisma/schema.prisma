@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Session 02: primary keys, foreign keys and NOT NULL only.
+// UNIQUE and CHECK constraints come in session 03.
+
+model Author {
+  id      Int      @id @default(autoincrement()) @map("author_id")
+  name    String
+  email   String
+  recipes Recipe[]
+
+  @@map("author")
+}
+
+model Recipe {
+  id       Int    @id @default(autoincrement()) @map("recipe_id")
+  authorId Int    @map("author_id")
+  title    String
+  servings Int
+
+  // Deliberate denormalisation: the listing page reads this column instead of
+  // summing the ingredients of every recipe. Recalculated whenever the
+  // ingredients change (see src/lib/kcal.ts).
+  kcalPerServing Decimal @default(0) @map("kcal_per_serving") @db.Decimal(7, 1)
+
+  author      Author             @relation(fields: [authorId], references: [id])
+  ingredients RecipeIngredient[]
+
+  @@map("recipe")
+}
+
+model Ingredient {
+  id          Int                @id @default(autoincrement()) @map("ingredient_id")
+  name        String
+  kcalPer100g Decimal            @map("kcal_per_100g") @db.Decimal(6, 1)
+  recipes     RecipeIngredient[]
+
+  @@map("ingredient")
+}
+
+// N:N between recipe and ingredient. The relationship has its own data (grams),
+// so it is a table of its own with a composite primary key.
+model RecipeIngredient {
+  recipeId     Int     @map("recipe_id")
+  ingredientId Int     @map("ingredient_id")
+  grams        Decimal @db.Decimal(7, 1)
+
+  recipe     Recipe     @relation(fields: [recipeId], references: [id])
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@id([recipeId, ingredientId])
+  @@map("recipe_ingredient")
+}

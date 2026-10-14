@@ -1,0 +1,13 @@
+[project]
+name = "s16-fastapi"
+version = "0.1.0"
+description = "Session 16 in FastAPI: source of truth, rebuild and persistence"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.142",
+    "uvicorn[standard]>=0.54",
+    "psycopg[binary]>=3.3",
+    "redis>=8.1",
+    "pydantic>=2.12",
+    "python-dotenv>=1.0",
+]

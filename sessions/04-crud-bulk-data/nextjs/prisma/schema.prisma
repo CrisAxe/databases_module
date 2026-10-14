@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Generated with `npx prisma db pull` on a copy of Pagila, then trimmed to the
+// tables this session uses. Prisma ignores the tables and columns left out.
+
+model actor {
+  actor_id    Int      @id @default(autoincrement())
+  first_name  String
+  last_name   String
+  last_update DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([last_name], map: "idx_actor_last_name")
+}
+
+model film {
+  film_id              Int          @id @default(autoincrement())
+  title                String
+  description          String?
+  release_year         Int?
+  language_id          Int
+  original_language_id Int?
+  rental_duration      Int          @default(3) @db.SmallInt
+  rental_rate          Decimal      @default(4.99) @db.Decimal(4, 2)
+  length               Int?         @db.SmallInt
+  replacement_cost     Decimal      @default(19.99) @db.Decimal(5, 2)
+  rating               mpaa_rating? @default(G)
+  last_update          DateTime     @default(now()) @db.Timestamptz(6)
+  special_features     String[]
+  // fulltext (tsvector) removed: Prisma does not support the type.
+  views                film_views?
+
+  @@index([title], map: "idx_title")
+}
+
+// New tables, created by prisma/migrations/1_film_views_person.
+
+// The tutorial's upsert target: one row per film, keyed by film_id.
+model film_views {
+  film_id Int  @id
+  views   Int  @default(0)
+  film    film @relation(fields: [film_id], references: [film_id])
+}
+
+// Bulk load target for scripts/bulk-person.ts.
+model person {
+  person_id Int    @id @default(autoincrement())
+  name      String
+  email     String
+  city      String
+}
+
+enum mpaa_rating {
+  G
+  PG
+  PG_13 @map("PG-13")
+  R
+  NC_17 @map("NC-17")
+}

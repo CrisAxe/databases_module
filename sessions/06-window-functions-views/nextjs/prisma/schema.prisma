@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Generated with `npx prisma db pull` on a copy of Pagila, then trimmed to the
+// tables the queries read. The window function queries use $queryRaw: the
+// Prisma query API has no OVER (...) clause.
+//
+// The materialised view daily_rentals is not here. Prisma's schema cannot
+// describe materialised views; it is created by
+// prisma/migrations/1_daily_rentals/migration.sql and read with $queryRaw.
+
+model film {
+  film_id Int          @id @default(autoincrement())
+  title   String
+  length  Int?         @db.SmallInt
+  rating  mpaa_rating? @default(G)
+}
+
+model rental {
+  rental_id    Int       @id @default(autoincrement())
+  rental_date  DateTime  @db.Timestamptz(6)
+  inventory_id Int
+  customer_id  Int
+  return_date  DateTime? @db.Timestamptz(6)
+  staff_id     Int
+}
+
+/// This table is a partition table and requires additional setup for migrations. Visit https://pris.ly/d/partition-tables for more info.
+model payment {
+  payment_id   Int      @default(autoincrement())
+  customer_id  Int
+  staff_id     Int
+  rental_id    Int
+  amount       Decimal  @db.Decimal(5, 2)
+  payment_date DateTime @db.Timestamptz(6)
+
+  @@id([payment_date, payment_id])
+}
+
+enum mpaa_rating {
+  G
+  PG
+  PG_13 @map("PG-13")
+  R
+  NC_17 @map("NC-17")
+}

@@ -1,0 +1,11 @@
+[project]
+name = "s12-django"
+version = "0.1.0"
+description = "Session 12 in Django: migrations on an existing database and a locked charge endpoint"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.1,<6.2",
+    "dj-database-url>=3.0",
+    "psycopg[binary]>=3.3",
+    "python-dotenv>=1.0",
+]

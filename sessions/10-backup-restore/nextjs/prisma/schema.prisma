@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Trimmed from `npx prisma db pull`: only the tables that
+// scripts/simulate-disaster.ts damages, so GET /api/counts can show the loss
+// and the recovery. Backups work on the whole database, not on these models.
+
+model film_actor {
+  actor_id    Int
+  film_id     Int
+  last_update DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([actor_id, film_id])
+}
+
+model film_category {
+  film_id     Int
+  category_id Int
+  last_update DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([film_id, category_id])
+}
+
+/// This table is a partition table and requires additional setup for migrations. Visit https://pris.ly/d/partition-tables for more info.
+model payment {
+  payment_id   Int      @default(autoincrement())
+  customer_id  Int
+  staff_id     Int
+  rental_id    Int
+  amount       Decimal  @db.Decimal(5, 2)
+  payment_date DateTime @db.Timestamptz(6)
+
+  @@id([payment_date, payment_id])
+}

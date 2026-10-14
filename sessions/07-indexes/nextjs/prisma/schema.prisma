@@ -1,0 +1,43 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  // Needed for @@index(..., where: ...) below.
+  previewFeatures = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// big_rental is created by scripts/create-big-rental.ts (CREATE TABLE AS with
+// generate_series), not by a migration. The model declares the tutorial's
+// indexes the Prisma way. `npx prisma migrate diff --from-empty --to-schema
+// prisma/schema.prisma --script` prints the CREATE INDEX statements they would
+// produce; scripts/indexes.ts runs the same statements on demand so you can
+// measure before and after.
+model big_rental {
+  // The tutorial's table has no primary key. Prisma needs a unique field to
+  // map a model, so id is declared as @id here; nothing in this project
+  // relies on it being unique.
+  id          Int       @id
+  customer_id Int
+  rented_at   DateTime  @db.Timestamptz(6)
+  returned_at DateTime? @db.Timestamptz(6)
+
+  // Composite: equality column first, sort column second, in the query's order.
+  @@index([customer_id, rented_at(sort: Desc)], map: "big_rental_customer_rented")
+  // Partial: only the rows not yet returned (preview feature partialIndexes).
+  @@index([rented_at], map: "big_rental_open", where: { returned_at: null })
+  // Plain index on rented_at: used for the last few days, ignored for the last two years.
+  @@index([rented_at], map: "big_rental_rented")
+}
+
+// Trimmed from `npx prisma db pull`. The expression index on lower(email)
+// cannot be declared in Prisma's schema: @@index only accepts columns.
+// It lives in scripts/indexes.ts as raw SQL.
+model customer {
+  customer_id Int     @id @default(autoincrement())
+  first_name  String
+  last_name   String
+  email       String?
+}

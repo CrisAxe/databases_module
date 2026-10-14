@@ -1,0 +1,12 @@
+[project]
+name = "s11-fastapi"
+version = "0.1.0"
+description = "Session 11 in FastAPI: SQLAlchemy and the N+1 problem"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.142",
+    "uvicorn[standard]>=0.54",
+    "sqlalchemy>=2.1",
+    "psycopg[binary]>=3.3",
+    "python-dotenv>=1.0",
+]

@@ -1,0 +1,43 @@
+// The Pagila tables this API uses (trimmed from `npx prisma db pull` and baselined in 0_init)
+// plus the account table from session 08 (migration 1_account).
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model customer {
+  customer_id Int      @id @default(autoincrement())
+  first_name  String
+  last_name   String
+  rental      rental[]
+}
+
+model inventory {
+  inventory_id Int      @id @default(autoincrement())
+  film_id      Int
+  store_id     Int
+  rental       rental[]
+}
+
+model rental {
+  rental_id    Int       @id @default(autoincrement())
+  rental_date  DateTime  @db.Timestamptz(6)
+  inventory_id Int
+  customer_id  Int
+  return_date  DateTime? @db.Timestamptz(6)
+  staff_id     Int
+  customer     customer  @relation(fields: [customer_id], references: [customer_id])
+  inventory    inventory @relation(fields: [inventory_id], references: [inventory_id])
+
+  @@unique([rental_date, inventory_id, customer_id], map: "idx_unq_rental_rental_date_inventory_id_customer_id")
+}
+
+// balance >= 0 is a CHECK constraint, which the Prisma schema cannot express: it is in the migration SQL.
+model account {
+  id      Int     @id
+  balance Decimal @db.Decimal
+}

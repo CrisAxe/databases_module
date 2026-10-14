@@ -1,0 +1,15 @@
+[project]
+name = "s19-fastapi"
+version = "0.1.0"
+description = "Session 19 in FastAPI: a demo you can run from a clean clone"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.142",
+    "uvicorn[standard]>=0.54",
+    "sqlalchemy>=2.1",
+    "psycopg[binary]>=3.3",
+    "redis>=8.1",
+    "pydantic>=2.12",
+    "python-dotenv>=1.0",
+    "httpx>=0.28",
+]

@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Generated with `npx prisma db pull` on a copy of Pagila, then trimmed to the
+// tables and columns the questions use. This project only reads, so it
+// has no migrations.
+
+model customer {
+  customer_id Int      @id @default(autoincrement())
+  first_name  String
+  last_name   String
+  rental      rental[]
+}
+
+model staff {
+  staff_id   Int      @id @default(autoincrement())
+  first_name String
+  last_name  String
+  store_id   Int
+  rental     rental[]
+}
+
+model film {
+  film_id   Int          @id @default(autoincrement())
+  title     String
+  length    Int?         @db.SmallInt
+  rating    mpaa_rating? @default(G)
+  inventory inventory[]
+}
+
+model inventory {
+  inventory_id Int      @id @default(autoincrement())
+  film_id      Int
+  store_id     Int
+  film         film     @relation(fields: [film_id], references: [film_id])
+  rental       rental[]
+}
+
+model rental {
+  rental_id    Int       @id @default(autoincrement())
+  rental_date  DateTime  @db.Timestamptz(6)
+  inventory_id Int
+  customer_id  Int
+  staff_id     Int
+  customer     customer  @relation(fields: [customer_id], references: [customer_id])
+  inventory    inventory @relation(fields: [inventory_id], references: [inventory_id])
+  staff        staff     @relation(fields: [staff_id], references: [staff_id])
+}
+
+/// This table is a partition table and requires additional setup for migrations. Visit https://pris.ly/d/partition-tables for more info.
+model payment {
+  payment_id   Int      @default(autoincrement())
+  customer_id  Int
+  staff_id     Int
+  rental_id    Int
+  amount       Decimal  @db.Decimal(5, 2)
+  payment_date DateTime @db.Timestamptz(6)
+
+  @@id([payment_date, payment_id])
+}
+
+enum mpaa_rating {
+  G
+  PG
+  PG_13 @map("PG-13")
+  R
+  NC_17 @map("NC-17")
+}

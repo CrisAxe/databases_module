@@ -1,0 +1,32 @@
+// Trimmed from `npx prisma db pull`: only the two Pagila tables this session maps.
+// Model and field names follow Prisma conventions; @map/@@map keep the real SQL names.
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Customer {
+  customerId Int      @id @default(autoincrement()) @map("customer_id")
+  storeId    Int      @map("store_id")
+  firstName  String   @map("first_name")
+  lastName   String   @map("last_name")
+  email      String?
+  rentals    Rental[]
+
+  @@map("customer")
+}
+
+model Rental {
+  rentalId   Int       @id @default(autoincrement()) @map("rental_id")
+  rentalDate DateTime  @map("rental_date") @db.Timestamptz(6)
+  returnDate DateTime? @map("return_date") @db.Timestamptz(6)
+  customerId Int       @map("customer_id")
+  customer   Customer  @relation(fields: [customerId], references: [customerId])
+
+  @@map("rental")
+}

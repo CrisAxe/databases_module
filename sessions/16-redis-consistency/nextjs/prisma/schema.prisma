@@ -1,0 +1,16 @@
+// Trimmed from `npx prisma db pull`. The rebuild and verify queries are $queryRaw (a DISTINCT
+// over a join reads better in SQL), so only customer needs a model. No migrations: read only.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model customer {
+  customer_id Int    @id @default(autoincrement())
+  first_name  String
+  last_name   String
+}

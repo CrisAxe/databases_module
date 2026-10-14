@@ -1,0 +1,30 @@
+# Secrets
+.env
+.env.local
+
+# Backups and downloaded data
+backups/
+*.dump
+*.archive.gz
+.cache/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+next-env.d.ts
+src/generated/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/
+
+# Some global git excludes files ignore these; the projects need them committed.
+!lib/
+!*.sql

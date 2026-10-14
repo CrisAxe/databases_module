@@ -1,0 +1,12 @@
+[project]
+name = "s04-django"
+version = "0.1.0"
+description = "Session 04 in Django: CRUD, upsert and bulk data"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.1,<6.2",
+    "dj-database-url>=3.0",
+    "psycopg[binary]>=3.3",
+    "faker>=40.0",
+    "python-dotenv>=1.0",
+]

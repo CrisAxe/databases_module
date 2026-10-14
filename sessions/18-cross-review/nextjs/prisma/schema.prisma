@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model customer {
+  customer_id Int           @id @default(autoincrement())
+  first_name  String
+  last_name   String
+  email       String?
+  last_update DateTime?     @default(now()) @db.Timestamptz(6)
+  film_rating film_rating[]
+}
+
+model film {
+  film_id     Int           @id @default(autoincrement())
+  title       String
+  film_rating film_rating[]
+}
+
+model film_rating {
+  customer_id Int
+  film_id     Int
+  stars       Int
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  customer    customer @relation(fields: [customer_id], references: [customer_id])
+  film        film     @relation(fields: [film_id], references: [film_id])
+
+  @@id([customer_id, film_id])
+  @@index([created_at])
+}
