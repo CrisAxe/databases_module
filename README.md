@@ -1,3 +1,8 @@
+
+> [!IMPORTANT]
+> The content of this file was co-authored with Claude Code. It helped me write this content with given restricted guidelines. 
+> Please open a PR or reach out to me if you find any error or missing piece or simply for any type of feedback.
+
 # Databases Module
 
 Module 11 of the Web Programming course (PW 25/27). 19 sessions of 3 hours, 57 hours in total.
